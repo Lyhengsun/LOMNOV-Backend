@@ -1,0 +1,1 @@
+CREATE DATABASE lumnov_db;
