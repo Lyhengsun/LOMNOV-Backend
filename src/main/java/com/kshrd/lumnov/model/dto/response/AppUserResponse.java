@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUserResponse {
+  private Integer appUserId;
   private String fullName;
   private Gender gender;
   private LocalDate dateOfBirth;
@@ -21,4 +22,5 @@ public class AppUserResponse {
   private Boolean isVerified;
   private String avatarUrl;
   private String emergencyContact;
+  private String deviceToken;
 }

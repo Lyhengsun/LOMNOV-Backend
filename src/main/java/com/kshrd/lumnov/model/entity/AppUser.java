@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUser implements UserDetails {
-  private Long appUserId;
+  private Integer appUserId;
   private String fullName;
   private Gender gender;
   private LocalDate dateOfBirth;

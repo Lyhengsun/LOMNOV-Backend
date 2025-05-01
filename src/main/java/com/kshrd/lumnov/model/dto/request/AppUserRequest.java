@@ -22,5 +22,5 @@ public class AppUserRequest {
   private String avatarUrl;
   private String emergencyContact;
   private String deviceToken;
-  private Long roleId;
+  private Integer roleId;
 }

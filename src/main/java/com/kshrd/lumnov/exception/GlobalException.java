@@ -19,11 +19,6 @@ import com.kshrd.lumnov.model.dto.response.BaseResponse;
 @RestControllerAdvice
 public class GlobalException extends BaseResponse {
 
-	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<?> notFoundException(NotFoundException e) {
-		return responseEntity(false, e.getMessage(), HttpStatus.NOT_FOUND, null);
-	}
-
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ProblemDetail> methodArgumentNotValidException(MethodArgumentNotValidException e) {
 		Map<String, String> error = new HashMap<>();
@@ -61,23 +56,33 @@ public class GlobalException extends BaseResponse {
 		return problemDetailResponseEntity(errors);
 	}
 
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
+		return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.NOT_FOUND);
+	}
+
 	@ExceptionHandler(WrongInputException.class)
 	public ResponseEntity<?> wrongInputException(WrongInputException e) {
-		return responseEntity(false, e.getMessage(), HttpStatus.NOT_FOUND, null);
+		return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(EmailAlreadyExistException.class)
 	public ResponseEntity<?> handleEmailAlreadyExistException(EmailAlreadyExistException e) {
-		return responseEntity(false, e.getMessage(), HttpStatus.BAD_REQUEST, null);
+		return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ExpireOTPCodeException.class)
 	public ResponseEntity<?> handleExpireOTPCodeException(ExpireOTPCodeException e) {
-		return responseEntity(false, e.getMessage(), HttpStatus.BAD_REQUEST, null);
+		return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(EmailNotRegisterException.class)
 	public ResponseEntity<?> handleEmailNotRegisterException(EmailNotRegisterException e) {
-		return responseEntity(false, e.getMessage(), HttpStatus.NOT_FOUND, null);
+		return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(InvalidException.class)
+	public ResponseEntity<?> handleInvalidException(InvalidException e) {
+		return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 }

@@ -11,4 +11,10 @@ public interface AppUserService extends UserDetailsService {
   AppUserResponse getProfile();
 
   void removeProfile();
+
+  public String reSendOTP(String email);
+
+  AppUserResponse verifyOTP(String email, String otp, Boolean isOTPRegister);
+
+  String resetPassword(String email, String otp, String newPassword);
 }

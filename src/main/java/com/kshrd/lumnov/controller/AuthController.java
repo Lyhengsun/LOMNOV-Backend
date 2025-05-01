@@ -2,6 +2,7 @@ package com.kshrd.lumnov.controller;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,10 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kshrd.lumnov.jwt.JwtService;
 import com.kshrd.lumnov.model.dto.request.AppUserRequest;
@@ -45,7 +43,8 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<?> authenticate(@Valid @RequestBody AuthRequest request)
+  @Operation( summary = "Login")
+  public ResponseEntity<?> Login(@Valid @RequestBody AuthRequest request)
       throws Exception {
     final UserDetails userDetails = appUserService.loadUserByUsername(request.getEmail());
     authenticate(userDetails.getUsername(), request.getPassword());
@@ -53,7 +52,7 @@ public class AuthController {
     AuthResponse authResponse = new AuthResponse(token);
     ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder()
         .success(true)
-        .message("Authenticated Successfully")
+        .message("Login Successfully")
         .payload(authResponse)
         .status(HttpStatus.OK)
         .timestamp(LocalDateTime.now())
@@ -62,6 +61,7 @@ public class AuthController {
   }
 
   @PostMapping("/register")
+  @Operation( summary = "Register New User")
   public ResponseEntity<?> register(@Valid @RequestBody AppUserRequest request) {
     AppUserResponse appUserResponse = appUserService.registerUser(request);
     ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder()
@@ -72,5 +72,65 @@ public class AuthController {
         .timestamp(LocalDateTime.now())
         .build();
     return new ResponseEntity<>(response, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/verify-register")
+  @Operation( summary = "Verify register email with OTP")
+  public ResponseEntity<?> verifyOTPRegister(@RequestParam String email, @RequestParam String otp) {
+    AppUserResponse appUserResponse = appUserService.verifyOTP(email, otp, true);
+
+    ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder()
+            .success(true)
+            .message("Verify OTP Register successfully")
+            .payload(appUserResponse)
+            .status(HttpStatus.CREATED)
+            .timestamp(LocalDateTime.now())
+            .build();
+
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/resend")
+  @Operation( summary = "Resend Verified OTP")
+  public ResponseEntity<?> resentOTP(@RequestParam String email){
+    String resent = appUserService.reSendOTP(email);
+    ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder()
+            .success(true)
+            .message(resent)
+            .status(HttpStatus.OK)
+            .timestamp(LocalDateTime.now())
+            .build();
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
+  @PostMapping("/verify-resetPassword")
+  @Operation( summary = "Verify resetPassword email with OTP")
+  public ResponseEntity<?> verifyOTPResetPassword(@RequestParam String email, @RequestParam String otp) {
+    AppUserResponse appUserResponse = appUserService.verifyOTP(email, otp, false);
+
+    ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder()
+            .success(true)
+            .message("Verify OTP Reset Password successfully")
+            .payload(appUserResponse)
+            .status(HttpStatus.CREATED)
+            .timestamp(LocalDateTime.now())
+            .build();
+
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/resetPassword")
+  @Operation( summary = "Reset Password")
+  public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String otp, @RequestParam String newPassword) {
+    String resultMessage = appUserService.resetPassword(email, otp, newPassword);
+
+    ApiResponse<String> response = ApiResponse.<String>builder()
+            .success(true)
+            .message(resultMessage)
+            .status(HttpStatus.OK)
+            .timestamp(LocalDateTime.now())
+            .build();
+
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 }
